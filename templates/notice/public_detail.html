@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ notice.title }}</h2>
+    <h3>{{notice.main_text}}</h3>
+    
+    <!-- Status: Active / Inactive -->
+    <p>
+        Holat: 
+        {% if notice.is_active %}
+            <span class="text-success">Faol</span>
+        {% else %}
+            <span class="text-danger">Faol emas</span>
+        {% endif %}
+    </p>
+
+    <!-- Public yoki Private -->
+    <p>
+        Turi: 
+        {% if notice.is_public %}
+            <span class="text-info">Public</span>
+        {% else %}
+            <span class="text-warning">Private</span>
+        {% endif %}
+    </p>
+</div>
+{% endblock %}

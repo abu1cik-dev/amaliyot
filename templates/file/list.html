@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% block title %}Fayllar{% endblock %}
+
+{% block content %}
+<div class="container mt-5 animate__animated animate__fadeInUp">
+    <div class="card p-4 shadow-lg border-0">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="m-0 fw-bold">📁 Fayllar boshqaruvi</h3>
+            <a href="{% url 'file_create' %}" class="btn btn-primary d-flex align-items-center gap-2">
+                <i class="fa-solid fa-plus"></i> Yangi fayl
+            </a>
+        </div>
+
+        <!-- Qidirish -->
+        <div class="mb-4">
+            <form method="get" class="d-flex gap-2">
+                <div class="input-group" style="border-radius: 8px; border: 1px solid var(--card-border);">
+                    <span class="input-group-text bg-transparent border-0 text-secondary"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="search" name="q" class="form-control bg-transparent border-0 text-white py-2" placeholder="Fayllarni qidirish..." value="{{ query }}">
+                </div>
+                <button class="btn btn-outline-light px-4">Filtrlash</button>
+            </form>
+        </div>
+
+        {% if object_list %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle border-0">
+                <thead class="text-secondary small text-uppercase">
+                    <tr>
+                        <th class="border-0">Nomi</th>
+                        <th class="border-0">Sana</th>
+                        <th class="border-0">Holat</th>
+                        <th class="border-0">Statistika</th>
+                        <th class="border-0 text-end">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody class="border-0">
+                    {% for file in object_list %}
+                    <tr style="border-bottom: 1px solid ">
+                        <td class="py-3">
+                            <div class="fw-semibold">{{ file.title }}</div>
+                            <div class="small text-secondary">ID: {{ file.id }}</div>
+                        </td>
+                        <td class="text-secondary small">{{ file.created_at|date:"d.m.Y" }}</td>
+                        <td>
+                            {% if file.is_public %}
+                            <span class="badge bg-success-subtle text-success px-2 py-1">Public</span>
+                            {% else %}
+                            <span class="badge bg-secondary-subtle text-secondary px-2 py-1">Private</span>
+                            {% endif %}
+                            {% if file.expire_date and file.expire_date < now %} <span class="badge bg-danger">
+                                Expired</span>
+                                {% endif %}
+                        </td>
+                        <td>
+                            <div class="small"><i class="fa-solid fa-eye me-1 opacity-50"></i> {{ file.views_count }}</div>
+                            <div class="small"><i class="fa-solid fa-download me-1 opacity-50"></i> {{ file.downloaded_count|default:"0" }}</div>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group">
+                                <a href="{% if file.is_public %}{% url 'file_public' file.public_id %}{% else %}{% url 'file_detail' file.id %}{% endif %}" class="btn btn-sm btn-dark border-secondary" title="Ko‘rish">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                                <a href="{% url 'file_edit' file.id %}" class="btn btn-sm btn-dark border-secondary" title="Tahrirlash">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+                                {% if file.public_id %}
+                                <button type="button" class="btn btn-sm btn-dark border-secondary" onclick='copyLink("{{ request.scheme }}://{{ request.get_host }}{% url "file_public" file.public_id %}")'>
+                                    <i class="fa-solid fa-link"></i>
+                                </button>
+                                {% endif %}
+                                <button class="btn btn-sm btn-dark border-secondary text-danger" onclick="openDeleteModal(event, this)" data-delete-url="{% url 'file_delete' file.id %}">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-center text-muted">📭 Fayllar yo‘q</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- LINK MODAL -->
+<div id="linkModal" class="custom-modal" style="display:none;">
+    <div class="modal-box p-3">
+        <h5>🔗 Fayl linki</h5>
+        <input type="text" id="fileLink" readonly onclick="copyFileLink()" class="form-control mb-2">
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary btn-sm" onclick="copyFileLink()">Nusxalash</button>
+            <button class="btn btn-secondary btn-sm" onclick="closeLinkModal()">Yopish</button>
+        </div>
+    </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div id="deleteModal" class="custom-modal" style="display:none;">
+    <div class="modal-box p-3">
+        <h5>⚠ O‘chirish</h5>
+        <p>Rostdan ham o‘chirmoqchimisiz?</p>
+        <form id="deleteForm" method="post">
+            {% csrf_token %}
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-danger btn-sm">Ha, o‘chirish</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="closeDeleteModal()">Bekor</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function copyLink(link) {
+        navigator.clipboard.writeText(link).then(() => {
+            alert('✅ Link nusxalandi!');
+        }).catch(() => {
+            alert('❌ Link nusxalashda xatolik yuz berdi!');
+        });
+    }
+    function openDeleteModal(e, el) {
+        e.preventDefault();
+        document.getElementById("deleteForm").action = el.dataset.deleteUrl;
+        document.getElementById('deleteModal').style.display = 'flex';
+    }
+    function closeDeleteModal() { document.getElementById('deleteModal').style.display = 'none'; }
+    function copyFileLink() {
+        var copyText = document.getElementById("fileLink");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); // For mobile devices
+        document.execCommand("copy");
+        alert("Link nusxalandi: " + copyText.value);
+    }
+    function closeLinkModal() {
+        document.getElementById('linkModal').style.display = 'none';
+    }
+</script>
+
+<style>
+    .custom-modal {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+
+    .modal-box {
+        background: #fff;
+        border-radius: 10px;
+        max-width: 500px;
+        width: 100%;
+    }
+</style>
+{% endblock %}

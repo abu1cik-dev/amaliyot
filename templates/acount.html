@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mening akkauntim{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Profilingiz</h2>
+    <div class="profile-info">
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>Account yaratildi:</strong> {{ user.date_joined|date:"d M Y H:i" }}</p>
+        <p><strong>Oxirgi login:</strong>
+            {% if user.last_login %}
+            {{ user.last_login|date:"d M Y H:i" }}
+            {% else %}
+            Hech qachon
+            {% endif %}
+        </p>
+    </div>
+</div>
+
+
+
+{% endblock %}

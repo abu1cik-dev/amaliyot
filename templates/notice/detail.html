@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title">{{ notice.title }}</h2>
+            <p class="text-muted mb-2">Qo‘shilgan: {{ notice.created_at|date:"d-m-Y H:i" }}</p>
+            <hr>
+            <p class="card-text">{{ notice.main_text }}</p>
+
+            <div class="mt-4">
+                <!-- Tahrirlash: faqat egasi ko‘rishi mumkin -->
+                {% if notice.id and request.user == notice.owner %}
+                <a href="{% url 'notice_edit' notice.id %}" class="btn btn-outline-primary me-2">
+                    <i class="fa-solid fa-file-pen"></i> Tahrirlash
+                </a>
+                {% endif %}
+
+                <!-- Orqaga -->
+                <a href="{% url 'notice_list' %}" class="btn btn-outline-secondary me-2">
+                    <i class="fa-solid fa-arrow-left"></i> Orqaga
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if notice.public_id %}
+<script>
+function copyPublicLink() {
+    var linkText = document.getElementById("publicLink").innerText;
+    var tempInput = document.createElement("input");
+    tempInput.value = linkText;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    tempInput.setSelectionRange(0, 99999); // mobil uchun ham
+    document.execCommand("copy");
+    document.body.removeChild(tempInput);
+    alert("Public link nusxalandi: " + linkText);
+}
+</script>
+{% endif %}
+{% endblock %}

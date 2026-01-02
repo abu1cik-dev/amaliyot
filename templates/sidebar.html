@@ -1,0 +1,105 @@
+<nav class="navbar navbar-expand-lg sticky-top animate__animated animate__fadeInDown" 
+  style="background: rgba(33, 52, 72, 0.95); backdrop-filter: blur(12px); border-bottom: 2px solid var(--color-light-blue);">
+  <div class="container">
+
+    <!-- LOGO -->
+    <a class="navbar-brand fw-bold fs-4 d-flex align-items-center text-white" href="/">
+      <i class="fa-solid fa-layer-group me-2" style="color: var(--color-cream);"></i>
+      <span style="color: var(--color-cream);">WORKSPACE</span>
+    </a>
+
+    <!-- TOGGLER (MOBILE) -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- MENU -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+
+        <!-- LINKS -->
+        <li class="nav-item">
+          <a class="nav-link px-3 position-relative overflow-hidden {% if request.path == '/notice/list/' %}active fw-bold{% endif %}"
+            href="/notice/list" style="--underline-color: var(--color-cream); color: rgba(234, 224, 207, 0.8) !important;">
+            Eslatmalar
+            <span class="nav-underline"></span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link px-3 position-relative overflow-hidden {% if request.path == '/file/' %}active fw-bold{% endif %}" 
+            href="/file/" style="--underline-color: var(--color-cream); color: rgba(234, 224, 207, 0.8) !important;">
+            Fayl ulash
+            <span class="nav-underline"></span>
+          </a>
+        </li>
+
+        <!-- USER DROPDOWN -->
+        <li class="nav-item dropdown">
+          <!-- MOBILE / TABLET -->
+          <a class="nav-link dropdown-toggle d-lg-none" href="#" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false" style="color: var(--color-cream) !important;">
+            <i class="fa-solid fa-bars"></i>
+          </a>
+
+          <!-- DESKTOP -->
+          <a class="nav-link dropdown-toggle d-none d-lg-inline fs-4" href="#" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false" style="color: var(--color-cream) !important;">
+            <i class="fa-regular fa-circle-user"></i>
+          </a>
+
+          <ul class="dropdown-menu dropdown-menu-end">
+
+            {% if user.is_authenticated %}
+            <li>
+              <a class="dropdown-item" href="/account/">
+                 👤 {{ user.username }}
+              </a>   
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li>
+              <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="dropdown-item text-danger">
+                  🗑 Chiqish
+                </button>
+              </form>
+            </li>
+            {% else %}
+            <li>
+              <a class="dropdown-item" href="{% url 'login' %}">
+                <i class="fa-regular fa-right-to-bracket me-2"></i> Kirish
+              </a>
+            </li>
+            {% endif %}
+
+          </ul>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<style>
+    /* navigation hover styles */
+    .nav-link { position: relative; }
+    .nav-underline {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--underline-color);
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    .nav-link:hover .nav-underline, .nav-link.active .nav-underline {
+        transform: scaleX(1);
+        transform-origin: left;
+    }
+</style>

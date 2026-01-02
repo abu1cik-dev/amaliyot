@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% block title %} Bosh sahifa {% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <div class="animated-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="container py-5 position-relative" style="z-index: 2;">
+        
+        <div class="row mb-5 animate__animated animate__fadeIn">
+            <div class="col-12 text-center text-md-start">
+                <h1 class="display-5 fw-bold text-navy">Xush kelibsiz, {{ user.username|default:"Mehmon" }}! 👋</h1>
+                <p class="lead text-steel">Bugungi ko'rsatkichlaringiz va tizim holati bilan tanishing.</p>
+            </div>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-4">
+                <div class="glass-card animate__animated animate__fadeInUp">
+                    <div class="card-icon icon-blue">
+                        <i class="fa-solid fa-folder-open"></i>
+                    </div>
+                    <div class="card-body-content">
+                        <h3>Fayllar boshqaruvi</h3>
+                        <p>Bulutli omboringizdagi barcha hujjatlarni boshqarish va xavfsiz saqlash.</p>
+                        <a href="/file/" class="action-btn">
+                            <span>Kirish</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="glass-card animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+                    <div class="card-icon icon-steel">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+                    <div class="card-body-content">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <h3>Eslatmalar</h3>
+                            <span class="pulse-badge">Yangilandi</span>
+                        </div>
+                        <p>Oxirgi 24 soat ichida tizimda yuz bergan muhim o'zgarishlar va habarlar.</p>
+                        <a href="/notice/list" class="action-btn">
+                            <span>Ko'rish</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="glass-card animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
+                    <div class="card-icon icon-light">
+                        <i class="fa-solid fa-user-gear"></i>
+                    </div>
+                    <div class="card-body-content">
+                        <h3>Profil va Havfsizlik</h3>
+                        <p>Shaxsiy ma'lumotlarni yangilash va ikki bosqichli autentifikatsiyani sozlash.</p>
+                        <a href="/account/" class="action-btn">
+                            <span>Sozlash</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --color-navy: #213448;
+        --color-steel: #547792;
+        --color-light-blue: #94B4C1;
+        --color-cream: #f8f4ed; /* Biroz ochiqroq va toza rang */
+    }
+
+    body {
+        background-color: var(--color-cream);
+        overflow-x: hidden;
+    }
+
+    .text-navy { color: var(--color-navy); }
+    .text-steel { color: var(--color-steel); }
+
+    /* Floating Blob Animations - (O'zgarmadi, lekin opacity yaxshilandi) */
+    .animated-bg {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        z-index: 1; filter: blur(100px); opacity: 0.5;
+    }
+
+    .blob {
+        position: absolute; border-radius: 50%;
+        animation: float 20s infinite alternate ease-in-out;
+    }
+    .blob-1 { width: 500px; height: 500px; background: var(--color-navy); top: -150px; left: -150px; }
+    .blob-2 { width: 400px; height: 400px; background: var(--color-steel); bottom: -100px; right: -100px; }
+    .blob-3 { width: 350px; height: 350px; background: var(--color-light-blue); top: 40%; left: 60%; }
+
+    @keyframes float {
+        0% { transform: translate(0, 0) scale(1); }
+        100% { transform: translate(50px, 50px) scale(1.1); }
+    }
+
+    /* Stat Badges */
+    .stat-badge {
+        background: rgba(255, 255, 255, 0.5);
+        padding: 15px;
+        border-radius: 20px;
+        border: 1px solid white;
+        color: var(--color-navy);
+        transition: 0.3s;
+    }
+    .stat-badge:hover { transform: scale(1.05); background: white; }
+
+    /* Glassmorphism Cards Enhanced */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 30px;
+        padding: 35px;
+        height: 100%;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .glass-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%;
+        width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: 0.5s;
+    }
+
+    .glass-card:hover::before { left: 100%; }
+
+    .glass-card:hover {
+        transform: translateY(-15px);
+        background: rgba(255, 255, 255, 0.6);
+        box-shadow: 0 30px 60px rgba(33, 52, 72, 0.15);
+    }
+
+    /* Icon Animations */
+    .card-icon {
+        width: 70px; height: 70px;
+        border-radius: 20px;
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-size: 1.8rem;
+        margin-bottom: 25px;
+        transition: 0.5s;
+    }
+    .icon-blue { background: var(--color-navy); }
+    .icon-steel { background: var(--color-steel); }
+    .icon-light { background: var(--color-light-blue); }
+
+    .glass-card:hover .card-icon {
+        transform: rotateY(360deg);
+        filter: hue-rotate(45deg);
+    }
+
+    /* Button Animations */
+    .action-btn {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 12px 25px;
+        background: var(--color-navy);
+        color: white; text-decoration: none;
+        border-radius: 15px; font-weight: 600;
+        transition: 0.3s;
+    }
+
+    .action-btn i { transition: 0.3s; }
+
+    .action-btn:hover {
+        background: var(--color-steel);
+        color: white;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    .action-btn:hover i { transform: translateX(5px); }
+
+    .pulse-badge {
+        background: #ffecb3;
+        color: #ff8f00;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        animation: pulse 2s infinite;
+    }
+</style>
+{% endblock %}

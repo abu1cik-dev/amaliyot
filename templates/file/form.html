@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}✏️ Fayl Tahrirlash{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg p-4" style="width: 100%; max-width: 500px; border-radius: 15px;">
+
+        <h3 class="text-center mb-4">✏️ Fayl Tahrirlash</h3>
+
+   
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Title -->
+            <div class="mb-3">
+                <label class="form-label">Fayl nomi</label>
+                {{ form.title }}
+                {% for error in form.title.errors %}
+                <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- File -->
+            <div class="mb-3">
+                {{ form.file }}
+                {% for error in form.file.errors %}
+                <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Is Public -->
+            <div class="form-check mb-3">
+                {{ form.is_public }}
+                <label class="form-check-label">Public qilish</label>
+                {% for error in form.is_public.errors %}
+                <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Download Limit -->
+            <div class="mb-3">
+                <label class="form-label">
+                    Yuklab olishlar soni (ixtiyoriy)
+                </label>
+
+                <input type="number" name="download_limit" class="form-control" placeholder="Masalan: 5" min="1"
+                    value="{{ form.download_limit.value|default_if_none:'' }}">
+
+                <small class="text-muted">
+                    Bo‘sh qoldirilsa — cheksiz yuklab olish mumkin
+                </small>
+
+                {% for error in form.download_limit.errors %}
+                <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+
+
+            <button type="submit" class="btn btn-primary w-100 mt-3">💾 Saqlash</button>
+        </form>
+
+        <a href="{% url 'file_list' %}" class="btn btn-secondary w-100 mt-2">⬅ Orqaga</a>
+
+    </div>
+</div>
+{% endblock %}

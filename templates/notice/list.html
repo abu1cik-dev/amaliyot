@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %} Eslatmalar {% endblock %}
+
+{% block content %}
+<div class="container mt-5 animate__animated animate__fadeInUp">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h1 class="fw-bold mb-1">Eslatmalar</h1>
+            <p class="text-secondary m-0">Barcha muhim xabarlar va eslatmalarni boshqaring</p>
+        </div>
+        <a href="{% url 'notice_create' %}" class="btn btn-primary d-flex align-items-center gap-2">
+            <i class="fa-solid fa-plus"></i> Yangi yaratish
+        </a>
+    </div>
+
+    <div class="card p-4 border-0 shadow-lg">
+        <form class="d-flex mb-4 gap-2" method="get">
+            <div class="input-group flex-grow-1" style="background: #111; border-radius: 8px; border: 1px solid var(--card-border);">
+                <span class="input-group-text bg-transparent border-0 text-secondary"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <input class="form-control bg-transparent border-0 text-white" type="search" name="q" placeholder="Qidiruv..." value="{{ query }}">
+            </div>
+            <button class="btn btn-outline-light px-4" type="submit">Qidirish</button>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="text-secondary small text-uppercase">
+                    <tr>
+                        <th class="border-0">Sarlavha</th>
+                        <th class="border-0 text-center">Ko'rishlar</th>
+                        <th class="border-0 text-center">Status</th>
+                        <th class="border-0 text-end">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody class="border-0">
+                    {% for notice in object_list %}
+                    <tr style="border-bottom: 1px solid #111;">
+                        <td class="py-3">
+                            <div class="fw-semibold">{{ notice.title }}</div>
+                            <div class="small text-secondary">ID: {{ notice.id }}</div>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-dark border border-secondary">{{ notice.views }}</span>
+                        </td>
+                        <td class="text-center">
+                            {% if notice.is_public %}
+                            <span class="badge bg-primary-subtle text-primary px-3">Public</span>
+                            {% else %}
+                            <span class="badge bg-secondary-subtle text-secondary px-3">Private</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group">
+                                <a href="{% url 'notice_detail' notice.id %}" class="btn btn-sm btn-dark border-secondary">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                                <a href="{% url 'notice_edit' notice.id %}" class="btn btn-sm btn-dark border-secondary">
+                                    <i class="fa-solid fa-file-pen"></i>
+                                </a>
+                                {% if notice.public_id %}
+                                <button type="button" class="btn btn-sm btn-dark border-secondary" onclick='copyLink("{{ request.scheme }}://{{ request.get_host }}{% url "notice_public" notice.public_id %}")'>
+                                    <i class="fa-solid fa-link"></i>
+                                </button>
+                                {% endif %}
+                                <button type="button" class="btn btn-sm btn-dark border-secondary text-danger" onclick="openDeleteModal({{ notice.id }})">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-5 text-secondary">Hozircha eslatmalar mavjud emas.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div id="deleteModal" class="custom-modal" style="display:none;">
+    <div class="modal-box danger">
+        <h4>⚠ O‘chirishni tasdiqlaysizmi?</h4>
+        <form id="deleteForm" method="post">{% csrf_token %}
+            <div class="modal-actions">
+                <button type="submit" class="btn btn-danger btn-sm">🗑 Ha, o‘chirish</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="closeDeleteModal()">Bekor
+                    qilish</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- SCRIPT -->
+<script>
+    function copyLink(link) {
+        navigator.clipboard.writeText(link).then(() => {
+            alert('✅ Link nusxalandi!');
+        }).catch(() => {
+            alert('❌ Link nusxalashda xatolik yuz berdi!');
+        });
+    }
+
+    function openDeleteModal(noticeId) {
+        // Django URL templating bilan delete link yaratamiz
+        const url = "{% url 'notice_delete' 0 %}".replace('0', noticeId);
+        document.getElementById('deleteForm').action = url;
+        document.getElementById('deleteModal').style.display = 'flex';
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+    }
+
+</script>
+
+<!-- MODAL CSS -->
+<style>
+    .custom-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    .modal-box {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        width: 320px;
+        max-width: 90%;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 15px;
+    }
+</style>
+
+{% endblock %}

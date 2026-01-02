@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Forbidden{% endblock %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <h1 class="display-4 text-danger">🚫 Ruxsat yo'q</h1>
+    <p class="lead">
+        Siz bu sahifani ko‘ra olmaysiz.
+    </p>
+    {% if not request.user.is_authenticated %}
+        <p>Iltimos, login qiling:</p>
+        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary">
+            Login sahifaga o'tish
+        </a>
+    {% else %}
+        <p>Sizda bu eslatmani ko‘rish huquqi yo‘q.</p>
+        <a href="{% url 'notice_list' %}" class="btn btn-secondary">Eslatmalar ro'yxatiga qaytish</a>
+    {% endif %}
+</div>
+{% endblock %}

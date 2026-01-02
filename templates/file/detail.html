@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ file.title }}{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .file-wrapper {
+        min-height: 80vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 1s ease;
+    }
+
+    .file-card {
+        background: #fff;
+        max-width: 620px;
+        width: 100%;
+        padding: 35px;
+        border-radius: 18px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        animation: scaleUp 0.6s ease forwards;
+    }
+
+    .file-card h2 {
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .info {
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    .badge {
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        color: #fff;
+        margin-left: 5px;
+    }
+
+    .badge-public {
+        background: #2ecc71;
+    }
+
+    .badge-private {
+        background: #e74c3c;
+    }
+
+    .badge-expired {
+        background: #e67e22;
+    }
+
+    .actions a {
+        display: inline-block;
+        margin-top: 10px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .download-link:hover {
+        transform: translateX(5px);
+        color: #1d6fa5;
+    }
+
+    .back-btn {
+        margin-top: 25px;
+        display: inline-block;
+        background: #ecf0f1;
+        padding: 10px 22px;
+        border-radius: 30px;
+        color: #333;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background: #d0d3d4;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes scaleUp {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+</style>
+
+<div class="file-wrapper">
+    <div class="file-card">
+
+        <h2>📄 {{ file.title }}</h2>
+
+        <p class="info">
+            <strong>Yuklangan:</strong> {{ file.created_at|date:"Y-m-d H:i" }}
+        </p>
+
+        <p class="info">
+            <strong>Holati:</strong>
+            {% if file.is_public %}
+                <span class="badge badge-public">Public</span>
+            {% else %}
+                <span class="badge badge-private">Private</span>
+            {% endif %}
+        </p>
+
+        {% if file.file %}
+        <div class="actions">
+            {% if not file.is_expired %}
+                <br>
+
+                {# ===== DOWNLOAD LIMIT INFO ===== #}
+                {% if file.download_limit %}
+                    <span class="badge bg-warning text-dark">
+                        Limit: {{ file.downloaded_count }} / {{ file.download_limit }}
+                    </span>
+                {% else %}
+                    <span class="badge bg-success">
+                        Cheksiz yuklab olish
+                    </span>
+                {% endif %}
+
+                <br><br>
+
+                {# ===== DOWNLOAD BUTTON LOGIC ===== #}
+                {% if file.download_limit and file.downloaded_count >= file.download_limit %}
+                    <span class="badge bg-danger">
+                        🚫 Yuklab olish limiti tugagan
+                    </span>
+                {% else %}
+                    {% if file.is_public %}
+                        <a href="{% url 'file_public_download' file.public_id %}">
+                            ⬇️ Yuklab olish
+                        </a>
+                    {% else %}
+                        <a href="{% url 'file_download' file.id %}">
+                            ⬇️ Yuklab olish
+                        </a>
+                    {% endif %}
+                {% endif %}
+
+            {% else %}
+                <p>⏳ Ushbu fayl linki muddati o'tgan!</p>
+            {% endif %}
+        </div>
+        {% else %}
+            <p>❌ Fayl mavjud emas.</p>
+        {% endif %}
+
+        <a href="{% url 'file_list' %}" class="back-btn">
+            ⬅ Orqaga
+        </a>
+    </div>
+</div>
+{% endblock %}
